@@ -1,6 +1,5 @@
 package com.m3food.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -17,12 +16,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-// အစားအသောက်အတွက် Data Class တည်ဆောက်ခြင်း
 data class FoodItem(
     val id: String,
     val name: String,
@@ -30,14 +26,15 @@ data class FoodItem(
     val price: Double,
     val rating: Double,
     val description: String,
-    val imageRes: Int // လောလောဆယ် Project ထဲက drawable resource သုံးရန်
+    val imageRes: Int
 )
 
+// Error ပျောက်စေရန် ဤနေရာတွင် `@OptIn` ထည့်သွင်းထားပါသည်
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onFoodClick: (FoodItem) -> Unit
 ) {
-    // ပုံထဲကအတိုင်း နမူနာ အစားအသောက် စာရင်းများ
     val foodList = remember {
         listOf(
             FoodItem("1", "ရွှေမုန့်ဟင်းခါး", "Royal Golden Mohinga", 2000.0, 4.9, "ရွှေဘိုဆန်အစစ်ဖြင့် ပြုလုပ်ထားသော နန်းပြား မုန့်ဟင်းခါး ဖြစ်ပါသည်။", 0),
@@ -57,7 +54,6 @@ fun HomeScreen(
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         
-        // အမျိုးအစားများ (Categories) ခေါင်းစဉ်
         Text(
             text = "အမျိုးအစားများ",
             style = MaterialTheme.typography.titleLarge,
@@ -66,7 +62,6 @@ fun HomeScreen(
         
         Spacer(modifier = Modifier.height(8.dp))
         
-        // Horizontal Categories List
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxWidth()
@@ -84,7 +79,6 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // လူကြိုက်အများဆုံး မီနူးများ ခေါင်းစဉ်
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -109,7 +103,6 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 2-Column Grid Food List (ပုံထဲကအတိုင်း ဘေးတိုက် ၂ ခုစီ ပြသရန်)
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -123,6 +116,8 @@ fun HomeScreen(
     }
 }
 
+// Error ပျောက်စေရန် ဤနေရာတွင်လည်း `@OptIn` ထည့်သွင်းထားပါသည်
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FoodCard(
     food: FoodItem,
@@ -139,7 +134,6 @@ fun FoodCard(
                     .fillMaxWidth()
                     .height(160.dp)
             ) {
-                // အစားအသောက်ပုံ (လောလောဆယ် ပုံမရှိပါက မီးခိုးရောင် Box အစားထိုးပြမည်)
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -156,7 +150,6 @@ fun FoodCard(
                     }
                 }
 
-                // Rating Badge (ဘယ်ဘက်အပေါ်)
                 Surface(
                     color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                     shape = CircleShape,
@@ -183,7 +176,6 @@ fun FoodCard(
                     }
                 }
 
-                // Favorite Button (ညာဘက်အပေါ်)
                 IconButton(
                     onClick = { },
                     modifier = Modifier
@@ -207,7 +199,6 @@ fun FoodCard(
                 }
             }
 
-            // အချက်အလက်များ
             Column(
                 modifier = Modifier
                     .padding(horizontal = 12.dp, vertical = 8.dp)
