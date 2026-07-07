@@ -10,6 +10,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+// တက်နေတဲ့ Error ပျောက်သွားစေဖို့ အောက်ပါ Import လိုင်းကို ဖြည့်ပေးလိုက်တာပါ
+import com.m3food.data.model.CartItem 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +47,6 @@ fun CartScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(cartItems) { cartItem ->
-                        // Swipe-to-Dismiss style simulated with standard M3 Card
                         OutlinedCard(
                             modifier = Modifier.fillMaxWidth(),
                             shape = MaterialTheme.shapes.large
@@ -58,7 +59,7 @@ fun CartScreen(
                                 Column {
                                     Text(cartItem.name, style = MaterialTheme.typography.titleMedium)
                                     Text(
-                                        " Ks ${cartItem.price.toInt()} x ${cartItem.quantity}",
+                                        " Ks ${cartItem.price} x ${cartItem.quantity}",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -75,7 +76,6 @@ fun CartScreen(
                     }
                 }
 
-                // Checkout Card with Surface Container color (M3 Container layout)
                 Surface(
                     tonalElevation = 8.dp,
                     shape = MaterialTheme.shapes.extraLarge,
@@ -91,7 +91,7 @@ fun CartScreen(
                         ) {
                             Text("စုစုပေါင်းကျသင့်ငွေ", style = MaterialTheme.typography.titleMedium)
                             Text(
-                                "Ks ${String.format("%,.0f", totalAmount)}",
+                                "Ks ${String.format("%,d", totalAmount)}",
                                 style = MaterialTheme.typography.titleLarge,
                                 color = MaterialTheme.colorScheme.primary
                             )
