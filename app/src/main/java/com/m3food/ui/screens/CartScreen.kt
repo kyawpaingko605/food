@@ -32,7 +32,7 @@ fun CartScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("မှာယူရန်စာရင်း", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold) },
-                // အမှားပြင်ဆင်ထားသောနေရာ (TopAppBarDefaults ကို ပြောင်းလဲအသုံးပြုထားပါသည်)
+                // Unresolved Error မတက်စေရန် TopAppBarDefaults ကို စနစ်တကျ ပြောင်းလဲထားပါသည်
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
         }
