@@ -44,19 +44,18 @@ fun HomeScreen(
     onAddToCart: (FoodItem) -> Unit,
     onLocationClick: () -> Unit
 ) {
-    // ပုံထဲကအတိုင်း အမျိုးအစားခလုတ်များ
     val categories = listOf("အားလုံး", "မြန်မာစာ", "ခေါက်ဆွဲများ", "အချိုပွဲ")
     var selectedCategory by remember { mutableStateOf("အားလုံး") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background) // ခရမ်းဖြူရောင် နောက်ခံ
+            .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 16.dp)
     ) {
         Spacer(modifier = Modifier.height(12.dp))
         
-        // ၁။ တည်နေရာပြသသည့်အပိုင်း (Top Location Card) - ခရမ်းနုရောင်
+        // ၁။ တည်နေရာပြသသည့်အပိုင်း (Top Location Card)
         Card(
             onClick = onLocationClick,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
@@ -112,7 +111,7 @@ fun HomeScreen(
         }
         Spacer(modifier = Modifier.height(12.dp))
 
-        // ၂။ အစားအသောက် Grid List (ဘေးတိုက် ၂ ခုစီ ပြသရန်)
+        // ၂။ အစားအသောက် Grid List
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -142,7 +141,6 @@ fun FoodCard(food: FoodItem, onClick: () -> Unit, onAddClick: () -> Unit) {
     ) {
         Column {
             Box(modifier = Modifier.fillMaxWidth().height(140.dp)) {
-                // အစားအသောက်ပုံ ထည့်သွင်းရန်နေရာ
                 if (food.imageRes != 0) {
                     Image(
                         painter = painterResource(id = food.imageRes),
@@ -163,7 +161,7 @@ fun FoodCard(food: FoodItem, onClick: () -> Unit, onAddClick: () -> Unit) {
                     }
                 }
                 
-                // ပုံထဲကအတိုင်း ဘယ်ဘက်အပေါ်က Rating Star
+                // Rating Box
                 Surface(
                     color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                     shape = CircleShape,
@@ -176,7 +174,7 @@ fun FoodCard(food: FoodItem, onClick: () -> Unit, onAddClick: () -> Unit) {
                     }
                 }
 
-                // ပုံထဲကအတိုင်း ညာဘက်အပေါ်က နှလုံးသားပုံ (Favorite Button)
+                // Favorite Button
                 IconButton(
                     onClick = { isFavorite = !isFavorite },
                     modifier = Modifier
@@ -196,12 +194,19 @@ fun FoodCard(food: FoodItem, onClick: () -> Unit, onAddClick: () -> Unit) {
 
             Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
                 Text(food.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                Text(food.englishName, style = Modifier.padding(top = 2.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                
+                // အမှားပြင်ဆင်လိုက်သောနေရာ (style ဖြစ်နေသည်ကို modifier ဟု ပြောင်းလဲလိုက်ပါသည်)
+                Text(
+                    text = food.englishName, 
+                    modifier = Modifier.padding(top = 2.dp), 
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Text("Ks ${String.format("%,.0f", food.price)}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                     
-                    // (+) ခရမ်းရင့်ရောင် ခလုတ်ကလေး
                     FilledIconButton(
                         onClick = onAddClick, 
                         modifier = Modifier.size(32.dp),
