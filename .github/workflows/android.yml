@@ -21,15 +21,32 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      # လိုအပ်တဲ့ gradle-wrapper.jar ရော gradle-wrapper.properties ပါ အပြီးအစီး ဆောက်ပေးမည့်အဆင့်
+      - name: Fix and Generate Gradle Wrapper Files
+        run: |
+          mkdir -p gradle/wrapper
+          # Jar ဖိုင်ကို ဒေါင်းလုဒ်ဆွဲခြင်း
+          curl -L -o gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.2.0/gradle/wrapper/gradle-wrapper.jar
+          # ပျောက်နေတဲ့ properties ဖိုင်ကို တိုက်ရိုက်ရေးသားပြီး ထည့်သွင်းခြင်း
+          cat <<EOF > gradle/wrapper/gradle-wrapper.properties
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-bin.zip
+          networkTimeout=10000
+          validateDistributionUrl=true
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          EOF
+
       # gradlew ကို Permission ပေးတာပါ
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # settings.gradle နဲ့ build.gradle မငြိအောင် အတင်းအကျပ် Build လုပ်ခိုင်းတဲ့အဆင့်
+      # ဖိုင်အားလုံး ပြည့်စုံသွားပြီဖြစ်လို့ APK Build လုပ်ခိုင်းတာပါ
       - name: Build with Gradle
         run: ./gradlew assembleRelease --no-daemon
 
-      # ထွက်လာမယ့် APK ဖိုင်ကို Upload တင်ပေးမယ့်အဆင့်
+      # ထွက်လာမယ့် APK ဖိုင်ကို သိမ်းဆည်းပေးမည့်အဆင့်
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
