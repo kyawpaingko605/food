@@ -1,5 +1,6 @@
 package com.m3food.ui.screens
 
+import androidx.compose.foundation.BorderStroke // BoxStroke အစား မှန်ကန်သော BorderStroke ကို Import လုပ်ထားပါသည်
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -34,7 +35,6 @@ fun FoodDetailScreen(
     var quantity by remember { mutableStateOf(1) }
     var isFavorite by remember { mutableStateOf(false) }
     
-    // Toppings စာရင်း
     val toppings = listOf("အပိုအသား" to 1500.0, "ဥ" to 500.0, "နံနံပင်" to 200.0)
     val selectedToppings = remember { mutableStateListOf<String>() }
 
@@ -68,7 +68,6 @@ fun FoodDetailScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // ၁။ အစားအသောက်ပုံပြသရန်ကတ် (ပုံမရှိပါက ခရမ်းနုရောင်ပြသမည်)
             item {
                 ElevatedCard(
                     modifier = Modifier
@@ -88,7 +87,6 @@ fun FoodDetailScreen(
                 }
             }
 
-            // ၂။ ဟင်းပွဲအမည်နှင့် အရေအတွက် တိုး/လျော့ ခလုတ်
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(text = foodName, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
@@ -105,7 +103,6 @@ fun FoodDetailScreen(
                             fontWeight = FontWeight.Bold
                         )
 
-                        // အရေအတွက် ပေါင်း/နှုတ် စနစ် - ခရမ်းရောင် Theme အတိုင်း ပြောင်းလဲထားပါသည်
                         Card(
                             shape = CircleShape,
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
@@ -138,7 +135,6 @@ fun FoodDetailScreen(
                 }
             }
 
-            // ၃။ အသေးစိတ်အချက်အလက်များ
             item {
                 Text(text = "အသေးစိတ်အချက်အလက်များ", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(4.dp))
@@ -150,7 +146,6 @@ fun FoodDetailScreen(
                 )
             }
 
-            // ၄။ Toppings ရွေးချယ်ရန်အပိုင်း
             item {
                 Text(text = "အပိုထည့်သွင်းရန် (Toppings)", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
@@ -165,7 +160,8 @@ fun FoodDetailScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
                     color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                    border = if (isSelected) BoxStroke(1.dp, MaterialTheme.colorScheme.primary) else null
+                    // အမှားပြင်ဆင်ထားသောနေရာ (BoxStroke အစား BorderStroke ဟု ပြောင်းလဲလိုက်ပါသည်)
+                    border = if (isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.primary) else null
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
@@ -188,7 +184,6 @@ fun FoodDetailScreen(
                 }
             }
 
-            // ၅။ ခြင်းတောင်းထဲထည့်ရန် ခလုတ်ကြီး
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
