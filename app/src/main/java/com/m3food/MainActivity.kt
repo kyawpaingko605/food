@@ -21,6 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
+import com.m3food.ui.screens.CartItem
+import com.m3food.ui.screens.CartScreen
 import com.m3food.ui.screens.FoodDetailScreen
 import com.m3food.ui.screens.FoodItem
 import com.m3food.ui.screens.HomeScreen
@@ -36,9 +38,11 @@ class MainActivity : ComponentActivity() {
                 var currentScreen by remember { mutableStateOf("home") }
                 var selectedFoodItem by remember { mutableStateOf<FoodItem?>(null) }
                 var userLocation by remember { mutableStateOf("ဗဟန်းမြို့နယ်၊ ရန်ကုန်မြို့") }
-                var cartItemsCount by remember { mutableStateOf(0) }
+                
+                // ခြင်းတောင်းထဲရှိ တကယ့်ပစ္စည်းစာရင်းများကို သိမ်းဆည်းရန် MutableStateList
+                val cartItems = remember { mutableStateListOf<CartItem>() }
 
-                // Runtime Permission တောင်းခံရန် စနစ်
+                // GPS Permission တောင်းခံရန် စနစ်
                 val locationPermissionLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.RequestPermission()
                 ) { isGranted ->
@@ -50,6 +54,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
+                // အစားအသောက်စာရင်း
                 val foodList = remember {
                     listOf(
                         FoodItem("1", "ရွှေမုန့်ဟင်းခါး", "Royal Golden Mohinga", 2000.0, 4.9, "ရွှေဘိုဆန်အစစ်ဖြင့် ပြုလုပ်ထားသော နန်းပြား မုန့်ဟင်းခါး ဖြစ်ပါသည်။", 0),
@@ -81,8 +86,10 @@ class MainActivity : ComponentActivity() {
                                 icon = {
                                     BadgedBox(
                                         badge = {
-                                            if (cartItemsCount > 0) {
-                                                Badge { Text(cartItemsCount.toString()) }
+                                            // ခြင်းတောင်းထဲရှိ စုစုပေါင်းအရေအတွက် (Quantity) ကို တွက်ချက်ပြသခြင်း
+                                            val totalQty = cartItems.sumOf { it.quantity }
+                                            if (totalQty > 0) {
+                                                Badge { Text(totalQty.toString()) }
                                             }
                                         }
                                     ) {
@@ -100,11 +107,21 @@ class MainActivity : ComponentActivity() {
                             selectedFoodItem = selectedFoodItem,
                             userLocation = userLocation,
                             foodList = foodList,
+                            cartItems = cartItems,
                             onNavigate = { screen -> currentScreen = screen },
                             onFoodSelect = { food -> selectedFoodItem = food; currentScreen = "detail" },
-                            onAddToCartClick = { qty -> cartItemsCount += qty },
+                            onAddToCartClick = { food, qty ->
+                                // ပစ္စည်းအဟောင်းရှိရင် အရေအတွက်ပဲတိုးပြီး မရှိရင် အသစ်ထည့်ခြင်း
+                                val existingItem = cartItems.find { it.name == food.name }
+                                if (existingItem != null) {
+                                    val index = cartItems.indexOf(existingItem)
+                                    cartItems[index] = existingItem.copy(quantity = existingItem.quantity + qty)
+                                } else {
+                                    cartItems.add(CartItem(name = food.name, price = food.price.toInt(), quantity = qty))
+                                }
+                            },
+                            onRemoveCartItem = { item -> cartItems.remove(item) },
                             onLocationClick = {
-                                // ကလစ်နှိပ်လျှင် Permission ရှိမရှိ အရင်စစ်ဆေးပြီးမှ အလုပ်လုပ်စေခြင်း
                                 val checkPermission = ContextCompat.checkSelfPermission(
                                     context, Manifest.permission.ACCESS_FINE_LOCATION
                                 )
@@ -130,9 +147,11 @@ fun AppNavigationHost(
     selectedFoodItem: FoodItem?,
     userLocation: String,
     foodList: List<FoodItem>,
+    cartItems: List<CartItem>,
     onNavigate: (String) -> Unit,
     onFoodSelect: (FoodItem) -> Unit,
-    onAddToCartClick: (Int) -> Unit,
+    onAddToCartClick: (FoodItem, Int) -> Unit,
+    onRemoveCartItem: (CartItem) -> Unit,
     onLocationClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -144,7 +163,7 @@ fun AppNavigationHost(
                     foodList = foodList,
                     onFoodClick = onFoodSelect,
                     onAddToCart = { food ->
-                        onAddToCartClick(1)
+                        onAddToCartClick(food, 1)
                         Toast.makeText(context, "${food.name} ကို ခြင်းတောင်းထဲ ထည့်ပြီးပါပြီ", Toast.LENGTH_SHORT).show()
                     },
                     onLocationClick = onLocationClick
@@ -159,7 +178,7 @@ fun AppNavigationHost(
                         ingredients = listOf("ရိုးရာပါဝင်ပစ္စည်းများ"),
                         onBackClick = { onNavigate("home") },
                         onAddToCartClick = { qty, toppings ->
-                            onAddToCartClick(qty)
+                            onAddToCartClick(food, qty)
                             Toast.makeText(context, "${food.name} ($qty) ခုကို ခြင်းတောင်းထဲ ထည့်ပြီးပါပြီ", Toast.LENGTH_SHORT).show()
                             onNavigate("home")
                         }
@@ -167,7 +186,17 @@ fun AppNavigationHost(
                 }
             }
             "menu" -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("မီနူးစာမျက်နှာ ဖြစ်သည်") }
-            "cart" -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("ခြင်းတောင်းစာမျက်နှာ ဖြစ်သည်") }
+            
+            // အဖြူရောင် Screen နေရာတွင် စနစ်တကျ ချိတ်ဆက်လိုက်သော တကယ့် CartScreen
+            "cart" -> {
+                CartScreen(
+                    cartItems = cartItems,
+                    onRemoveItem = onRemoveCartItem,
+                    onCheckoutClick = {
+                        Toast.makeText(context, "မှာယူမှု အောင်မြင်ပါသည်။ ဆိုင်မှ မကြာမီ ဆက်သွယ်ပါမည်။", Toast.LENGTH_LONG).show()
+                    }
+                )
+            }
         }
     }
 }
