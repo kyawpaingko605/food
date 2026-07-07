@@ -26,10 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.m3food.ui.screens.FoodDetailScreen
 import com.m3food.ui.theme.M3FoodTheme
 
 class MainActivity : ComponentActivity() {
-    // Experimental API အမှားကို ကျော်ဖြတ်ရန် Annotation ၂ ခုလုံး ထည့်ပေးထားပါသည်
     @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,9 +91,32 @@ fun AppNavigationHost(
     onNavigate: (String) -> Unit
 ) {
     Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = modifier.fillMaxSize()
     ) {
-        Text(text = "ယခုစာမျက်နှာမှာ - $currentScreen ဖြစ်သည်")
+        when (currentScreen) {
+            "home" -> {
+                // အသစ်ပြင်ဆင်ထားသော မြန်မာအစားအသောက် Detail Screen ကို ချိတ်ဆက်ထားပါသည်
+                FoodDetailScreen(
+                    foodName = "မုန့်ဟင်းခါး",
+                    price = 2500.0,
+                    description = "ရွှေဘိုဆန်အစစ်ဖြင့် ပြုလုပ်ထားသော နန်းပြား မုန့်ဟင်းခါး အုန်းနို့ဆမ်း ပူပူနွေးနွေးလေး ဖြစ်ပါသည်။",
+                    ingredients = listOf("မုန့်ဟင်းခါးဖတ်", "ငါးခူ", "ဘဲဥ"),
+                    onBackClick = { onNavigate("menu") },
+                    onAddToCartClick = { quantity, toppings -> 
+                        // ခြင်းတောင်းထဲသို့ ထည့်သွင်းသည့် လုပ်ဆောင်ချက် ထည့်ရန်
+                    }
+                )
+            }
+            "menu" -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("မီနူးစာမျက်နှာ ဖြစ်သည်")
+                }
+            }
+            "cart" -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("ခြင်းတောင်းစာမျက်နှာ ဖြစ်သည်")
+                }
+            }
+        }
     }
 }
