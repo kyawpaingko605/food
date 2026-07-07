@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
@@ -31,7 +32,7 @@ data class FoodItem(
     val price: Double,
     val rating: Double,
     val description: String,
-    val imageRes: Int // drawable ထဲက ပုံ Resource ID ထည့်ရန်
+    val imageRes: Int
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,17 +44,19 @@ fun HomeScreen(
     onAddToCart: (FoodItem) -> Unit,
     onLocationClick: () -> Unit
 ) {
+    // ပုံထဲကအတိုင်း အမျိုးအစားခလုတ်များ
     val categories = listOf("အားလုံး", "မြန်မာစာ", "ခေါက်ဆွဲများ", "အချိုပွဲ")
     var selectedCategory by remember { mutableStateOf("အားလုံး") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background) // ခရမ်းဖြူရောင် နောက်ခံ
             .padding(horizontal = 16.dp)
     ) {
         Spacer(modifier = Modifier.height(12.dp))
         
-        // ၁။ တည်နေရာပြသသည့်အပိုင်း (Top Location Card)
+        // ၁။ တည်နေရာပြသသည့်အပိုင်း (Top Location Card) - ခရမ်းနုရောင်
         Card(
             onClick = onLocationClick,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
@@ -67,14 +70,14 @@ fun HomeScreen(
                 Icon(Icons.Default.LocationOn, contentDescription = "Location", tint = MaterialTheme.colorScheme.primary)
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
-                    Text("ပို့ဆောင်မည့် တည်နေရာ", style = MaterialTheme.typography.labelSmall)
-                    Text(currentLocation, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                    Text("ပို့ဆောင်မည့် တည်နေရာ", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Text(currentLocation, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-        Text("အမျိုးအစားများ", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Text("အမျိုးအစားများ", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(8.dp))
         
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -83,13 +86,30 @@ fun HomeScreen(
                     selected = category == selectedCategory,
                     onClick = { selectedCategory = category },
                     label = { Text(category) },
-                    shape = CircleShape
+                    shape = CircleShape,
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("လူကြိုက်အများဆုံး မီနူးများ", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(20.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text("လူကြိုက်အများဆုံး မီနူးများ", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text("အရည်အသွေးမြင့် ရိုးရာနှင့် လူကြိုက်များသော ဟင်းလျာများ", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            TextButton(onClick = { }) {
+                Text("ကြည့်မည်", color = MaterialTheme.colorScheme.primary)
+            }
+        }
         Spacer(modifier = Modifier.height(12.dp))
 
         // ၂။ အစားအသောက် Grid List (ဘေးတိုက် ၂ ခုစီ ပြသရန်)
@@ -113,7 +133,13 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FoodCard(food: FoodItem, onClick: () -> Unit, onAddClick: () -> Unit) {
-    ElevatedCard(onClick = onClick, shape = MaterialTheme.shapes.large) {
+    var isFavorite by remember { mutableStateOf(false) }
+
+    ElevatedCard(
+        onClick = onClick, 
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
         Column {
             Box(modifier = Modifier.fillMaxWidth().height(140.dp)) {
                 // အစားအသောက်ပုံ ထည့်သွင်းရန်နေရာ
@@ -137,7 +163,7 @@ fun FoodCard(food: FoodItem, onClick: () -> Unit, onAddClick: () -> Unit) {
                     }
                 }
                 
-                // Rating Star
+                // ပုံထဲကအတိုင်း ဘယ်ဘက်အပေါ်က Rating Star
                 Surface(
                     color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                     shape = CircleShape,
@@ -145,21 +171,43 @@ fun FoodCard(food: FoodItem, onClick: () -> Unit, onAddClick: () -> Unit) {
                 ) {
                     Row(modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Star, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(12.dp))
+                        Spacer(modifier = Modifier.width(2.dp))
                         Text(food.rating.toString(), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
                     }
+                }
+
+                // ပုံထဲကအတိုင်း ညာဘက်အပေါ်က နှလုံးသားပုံ (Favorite Button)
+                IconButton(
+                    onClick = { isFavorite = !isFavorite },
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .size(28.dp)
+                        .background(MaterialTheme.colorScheme.surface, CircleShape)
+                        .align(Alignment.TopEnd)
+                ) {
+                    Icon(
+                        imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        tint = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(16.dp)
+                    )
                 }
             }
 
             Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
                 Text(food.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                Text(food.englishName, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(food.englishName, style = Modifier.padding(top = 2.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Text("Ks ${String.format("%,.0f", food.price)}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                     
-                    // (+) ခလုတ်နှိပ်လျှင် မှာယူမှုထဲ တိုက်ရိုက်ပေါင်းထည့်ရန်
-                    FilledIconButton(onClick = onAddClick, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Default.Add, contentDescription = "Add")
+                    // (+) ခရမ်းရင့်ရောင် ခလုတ်ကလေး
+                    FilledIconButton(
+                        onClick = onAddClick, 
+                        modifier = Modifier.size(32.dp),
+                        colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Add", tint = MaterialTheme.colorScheme.onPrimary)
                     }
                 }
             }
