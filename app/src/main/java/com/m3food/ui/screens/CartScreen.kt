@@ -32,7 +32,8 @@ fun CartScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("မှာယူရန်စာရင်း", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold) },
-                colors = CenterAlignedTopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = MaterialTheme.colorScheme.background)
+                // အမှားပြင်ဆင်ထားသောနေရာ (TopAppBarDefaults ကို ပြောင်းလဲအသုံးပြုထားပါသည်)
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
         }
     ) { innerPadding ->
@@ -68,7 +69,6 @@ fun CartScreen(
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(cartItem.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                                     Spacer(modifier = Modifier.height(4.dp))
-                                    // ဈေးနှုန်းပြသမှုတွင် Locale.US သုံး၍ Crash ဖြစ်ခြင်းကို ကာကွယ်ထားပါသည်
                                     Text(
                                         "Ks ${String.format(java.util.Locale.US, "%,d", cartItem.price)} x ${cartItem.quantity}",
                                         style = MaterialTheme.typography.bodyMedium,
@@ -87,7 +87,6 @@ fun CartScreen(
                     }
                 }
 
-                // အောက်ခြေ စုစုပေါင်းငွေပြသသည့်အပိုင်း
                 Surface(
                     tonalElevation = 8.dp,
                     shape = MaterialTheme.shapes.extraLarge,
@@ -104,7 +103,6 @@ fun CartScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text("စုစုပေါင်းကျသင့်ငွေ", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                            // ဤနေရာတွင် Locale.US စနစ်တကျ ထည့်သွင်းပြင်ဆင်ထားပါသည်
                             Text(
                                 "Ks ${String.format(java.util.Locale.US, "%,d", totalAmount)}",
                                 style = MaterialTheme.typography.titleLarge,
