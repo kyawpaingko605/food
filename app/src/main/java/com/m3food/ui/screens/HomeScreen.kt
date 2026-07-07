@@ -55,7 +55,6 @@ fun HomeScreen(
     ) {
         Spacer(modifier = Modifier.height(12.dp))
         
-        // ၁။ တည်နေရာပြသသည့်အပိုင်း (Top Location Card)
         Card(
             onClick = onLocationClick,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
@@ -111,7 +110,6 @@ fun HomeScreen(
         }
         Spacer(modifier = Modifier.height(12.dp))
 
-        // ၂။ အစားအသောက် Grid List
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -161,7 +159,6 @@ fun FoodCard(food: FoodItem, onClick: () -> Unit, onAddClick: () -> Unit) {
                     }
                 }
                 
-                // Rating Box
                 Surface(
                     color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                     shape = CircleShape,
@@ -174,7 +171,6 @@ fun FoodCard(food: FoodItem, onClick: () -> Unit, onAddClick: () -> Unit) {
                     }
                 }
 
-                // Favorite Button
                 IconButton(
                     onClick = { isFavorite = !isFavorite },
                     modifier = Modifier
@@ -195,7 +191,6 @@ fun FoodCard(food: FoodItem, onClick: () -> Unit, onAddClick: () -> Unit) {
             Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
                 Text(food.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 
-                // အမှားပြင်ဆင်လိုက်သောနေရာ (style ဖြစ်နေသည်ကို modifier ဟု ပြောင်းလဲလိုက်ပါသည်)
                 Text(
                     text = food.englishName, 
                     modifier = Modifier.padding(top = 2.dp), 
@@ -205,7 +200,13 @@ fun FoodCard(food: FoodItem, onClick: () -> Unit, onAddClick: () -> Unit) {
                 
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text("Ks ${String.format("%,.0f", food.price)}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                    // ဤနေရာတွင် Locale.US စနစ်တကျ ပြောင်းလဲပြင်ဆင်ထားပါသည်
+                    Text(
+                        text = "Ks ${String.format(java.util.Locale.US, "%,.0f", food.price)}", 
+                        style = MaterialTheme.typography.titleMedium, 
+                        color = MaterialTheme.colorScheme.primary, 
+                        fontWeight = FontWeight.Bold
+                    )
                     
                     FilledIconButton(
                         onClick = onAddClick, 
