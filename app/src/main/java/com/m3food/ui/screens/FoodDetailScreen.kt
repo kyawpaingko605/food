@@ -25,7 +25,8 @@ fun FoodDetailScreen(
     description: String,
     ingredients: List<String>,
     onBackClick: () -> Unit,
-    onAddToCartClick: (quantity: Int, selectedToppings: List<String>) => Unit
+    // (quantity: Int, selectedToppings: List<String>) => Unit ဖြစ်နေတာကို -> Unit ဖြစ်အောင် ပြင်လိုက်ပါတယ်
+    onAddToCartClick: (quantity: Int, selectedToppings: List<String>) -> Unit
 ) {
     var quantity by remember { mutableStateOf(1) }
     val toppings = listOf("အပိုအသား" to 1500.0, "ဥ" to 500.0, "နံနံပင်" to 200.0)
@@ -56,13 +57,11 @@ fun FoodDetailScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                // Large M3 Premium Food Card
                 ElevatedCard(
                     modifier = Modifier.fillMaxWidth().height(240.dp),
                     shape = MaterialTheme.shapes.extraLarge
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        // Image loaded here with standard Coil placeholder
                         Text(
                             "စားချင်စဖွယ် အစားအသောက်ပုံရိပ်",
                             modifier = Modifier.align(Alignment.Center),
@@ -84,7 +83,6 @@ fun FoodDetailScreen(
                         color = MaterialTheme.colorScheme.primary
                     )
 
-                    // M3 Small Outlined Card for Quantity Adjuster
                     OutlinedCard(
                         shape = MaterialTheme.shapes.full
                     ) {
