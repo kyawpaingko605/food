@@ -1,8 +1,7 @@
 package com.m3food.model
 
 /**
- * Jetpack Compose နှင့် ပိုမိုအဆင်ပြေစေရန် Kotlin Data Class အဖြစ် 
- * ကျစ်လျစ်စွာ ပြန်လည်ပြင်ဆင်ထားသော FoodItem Model ဖြစ်သည်။
+ * Kotlin Data Class အဖြစ် ပြောင်းလဲထားသော FoodItem Model ဖြစ်သည်။
  */
 data class FoodItem(
     val id: String,
