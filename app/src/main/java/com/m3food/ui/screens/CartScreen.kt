@@ -10,8 +10,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-// တက်နေတဲ့ Error ပျောက်သွားစေဖို့ အောက်ပါ Import လိုင်းကို ဖြည့်ပေးလိုက်တာပါ
-import com.m3food.data.model.CartItem 
+
+// အမှားတက်နေတဲ့ Import လိုင်းဟောင်းကို ဖယ်ထုတ်ပြီး 
+// အောက်ပါအတိုင်း ပရောဂျက်အတွက် လိုအပ်မယ့် Model ကို ဒီမှာတင် တိုက်ရိုက်ဆောက်လိုက်ပါတယ်
+data class CartItem(
+    val name: String,
+    val price: Int,
+    val quantity: Int
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
