@@ -40,10 +40,10 @@ jobs:
         run: |
           sed -i 's/RepositoriesMode.FAIL_ON_PROJECT_REPOS/RepositoriesMode.PREFER_SETTINGS/g' settings.gradle
 
-      # Manifest ထဲမှာ ရှာမတွေ့ဘူးပြောနေတဲ့ ရင်းမြစ် (Missing Resources) များကို အလိုအလျောက် ဖန်တီးပေးမည့်အဆင့်
+      # AAPT compile ဖြစ်အောင် XML Launcher Icon စစ်စစ်များကို ဖန်တီးပေးမည့်အဆင့်
       - name: Auto Create Missing Resources & Theme
         run: |
-          mkdir -p app/src/main/res/mipmap-hdpi
+          mkdir -p app/src/main/res/mipmap-anydpi-v26
           mkdir -p app/src/main/res/values
           
           # အခြေခံ Theme ကို ရေးသားပေးခြင်း
@@ -53,9 +53,20 @@ jobs:
           </resources>
           EOF
           
-          # အခြေခံ အိုင်ကွန်ပုံများကို ယာယီဖန်တီးပေးခြင်း
-          touch app/src/main/res/mipmap-hdpi/ic_launcher.png
-          touch app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+          # AAPT က လက်ခံမည့် ကောင်းမွန်သော XML Icon များ ဖန်တီးပေးခြင်း
+          cat <<EOF > app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@android:color/white"/>
+              <foreground android:drawable="@android:color/black"/>
+          </adaptive-icon>
+          EOF
+          
+          cat <<EOF > app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@android:color/white"/>
+              <foreground android:drawable="@android:color/black"/>
+          </adaptive-icon>
+          EOF
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
