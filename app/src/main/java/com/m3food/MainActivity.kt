@@ -1,9 +1,13 @@
 package com.m3food
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import com.m3food.ui.screens.FoodDetailScreen
 import com.m3food.ui.screens.FoodItem
 import com.m3food.ui.screens.HomeScreen
@@ -30,14 +35,21 @@ class MainActivity : ComponentActivity() {
                 val context = LocalContext.current
                 var currentScreen by remember { mutableStateOf("home") }
                 var selectedFoodItem by remember { mutableStateOf<FoodItem?>(null) }
-                
-                // တည်နေရာပြောင်းလဲမှုကို သိမ်းဆည်းရန် State
                 var userLocation by remember { mutableStateOf("ဗဟန်းမြို့နယ်၊ ရန်ကုန်မြို့") }
-                
-                // ခြင်းတောင်းထဲရှိ စုစုပေါင်းပစ္စည်းအရေအတွက် State
                 var cartItemsCount by remember { mutableStateOf(0) }
 
-                // အစားအသောက် စာရင်းရင်းမြစ် (ပုံများထည့်လိုပါက res/drawable ထဲ ပုံထည့်ပြီး 0 နေရာတွင် R.drawable.your_image_name ဟုပြောင်းပါ)
+                // Runtime Permission တောင်းခံရန် စနစ်
+                val locationPermissionLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.RequestPermission()
+                ) { isGranted ->
+                    if (isGranted) {
+                        userLocation = "လှိုင်မြို့နယ်၊ ရန်ကုန်မြို့ (GPS ရရှိပါပြီ)"
+                        Toast.makeText(context, "တည်နေရာ ရယူခွင့် ပေးလိုက်ပါပြီ", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "တည်နေရာ ရယူခွင့် ငြင်းပယ်ခံရပါသည်", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
                 val foodList = remember {
                     listOf(
                         FoodItem("1", "ရွှေမုန့်ဟင်းခါး", "Royal Golden Mohinga", 2000.0, 4.9, "ရွှေဘိုဆန်အစစ်ဖြင့် ပြုလုပ်ထားသော နန်းပြား မုန့်ဟင်းခါး ဖြစ်ပါသည်။", 0),
@@ -83,40 +95,79 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        when (currentScreen) {
-                            "home" -> HomeScreen(
-                                currentLocation = userLocation,
-                                foodList = foodList,
-                                onFoodClick = { food -> selectedFoodItem = food; currentScreen = "detail" },
-                                onAddToCart = { food ->
-                                    cartItemsCount += 1 // ခြင်းတောင်းထဲထည့်လျှင် Badge အရေအတွက် တိုးသွားမည်
-                                    Toast.makeText(context, "${food.name} ကို ခြင်းတောင်းထဲ ထည့်ပြီးပါပြီ", Toast.LENGTH_SHORT).show()
-                                },
-                                onLocationClick = {
-                                    userLocation = "လှိုင်မြို့နယ်၊ ရန်ကုန်မြို့" // တည်နေရာပြောင်းလဲမှု စမ်းသပ်ရန်
-                                    Toast.makeText(context, "တည်နေရာ ပြောင်းလဲပြီးပါပြီ", Toast.LENGTH_SHORT).show()
-                                }
-                            )
-                            "detail" -> selectedFoodItem?.let { food ->
-                                FoodDetailScreen(
-                                    foodName = food.name,
-                                    price = food.price,
-                                    description = food.description,
-                                    ingredients = listOf("ရိုးရာပါဝင်ပစ္စည်းများ"),
-                                    onBackClick = { currentScreen = "home" },
-                                    onAddToCartClick = { qty, toppings ->
-                                        cartItemsCount += qty // Detail Screen မှ အရေအတွက်အလိုက် မှာယူမှု ပေါင်းထည့်ခြင်း
-                                        Toast.makeText(context, "${food.name} ($qty) ခုကို ခြင်းတောင်းထဲ ထည့်ပြီးပါပြီ", Toast.LENGTH_SHORT).show()
-                                        currentScreen = "home"
-                                    }
+                        AppNavigationHost(
+                            currentScreen = currentScreen,
+                            selectedFoodItem = selectedFoodItem,
+                            userLocation = userLocation,
+                            foodList = foodList,
+                            onNavigate = { screen -> currentScreen = screen },
+                            onFoodSelect = { food -> selectedFoodItem = food; currentScreen = "detail" },
+                            onAddToCartClick = { qty -> cartItemsCount += qty },
+                            onLocationClick = {
+                                // ကလစ်နှိပ်လျှင် Permission ရှိမရှိ အရင်စစ်ဆေးပြီးမှ အလုပ်လုပ်စေခြင်း
+                                val checkPermission = ContextCompat.checkSelfPermission(
+                                    context, Manifest.permission.ACCESS_FINE_LOCATION
                                 )
+                                if (checkPermission == PackageManager.PERMISSION_GRANTED) {
+                                    userLocation = "လှိုင်မြို့နယ်၊ ရန်ကုန်မြို့"
+                                    Toast.makeText(context, "တည်နေရာကို အပ်ဒိတ်လုပ်ပြီးပါပြီ", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                                }
                             }
-                            "menu" -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("မီနူးစာမျက်နှာ ဖြစ်သည်") }
-                            "cart" -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("ခြင်းတောင်းထဲတွင် မှာယူထားသော ပစ္စည်း ($cartItemsCount) ခု ရှိပါသည်") }
-                        }
+                        )
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun AppNavigationHost(
+    modifier: Modifier = Modifier,
+    currentScreen: String,
+    selectedFoodItem: FoodItem?,
+    userLocation: String,
+    foodList: List<FoodItem>,
+    onNavigate: (String) -> Unit,
+    onFoodSelect: (FoodItem) -> Unit,
+    onAddToCartClick: (Int) -> Unit,
+    onLocationClick: () -> Unit
+) {
+    val context = LocalContext.current
+    Box(modifier = modifier.fillMaxSize()) {
+        when (currentScreen) {
+            "home" -> {
+                HomeScreen(
+                    currentLocation = userLocation,
+                    foodList = foodList,
+                    onFoodClick = onFoodSelect,
+                    onAddToCart = { food ->
+                        onAddToCartClick(1)
+                        Toast.makeText(context, "${food.name} ကို ခြင်းတောင်းထဲ ထည့်ပြီးပါပြီ", Toast.LENGTH_SHORT).show()
+                    },
+                    onLocationClick = onLocationClick
+                )
+            }
+            "detail" -> {
+                selectedFoodItem?.let { food ->
+                    FoodDetailScreen(
+                        foodName = food.name,
+                        price = food.price,
+                        description = food.description,
+                        ingredients = listOf("ရိုးရာပါဝင်ပစ္စည်းများ"),
+                        onBackClick = { onNavigate("home") },
+                        onAddToCartClick = { qty, toppings ->
+                            onAddToCartClick(qty)
+                            Toast.makeText(context, "${food.name} ($qty) ခုကို ခြင်းတောင်းထဲ ထည့်ပြီးပါပြီ", Toast.LENGTH_SHORT).show()
+                            onNavigate("home")
+                        }
+                    )
+                }
+            }
+            "menu" -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("မီနူးစာမျက်နှာ ဖြစ်သည်") }
+            "cart" -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("ခြင်းတောင်းစာမျက်နှာ ဖြစ်သည်") }
         }
     }
 }
