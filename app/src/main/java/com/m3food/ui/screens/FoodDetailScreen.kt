@@ -1,6 +1,6 @@
 package com.m3food.ui.screens
 
-import androidx.compose.foundation.BorderStroke // BoxStroke အစား မှန်ကန်သော BorderStroke ကို Import လုပ်ထားပါသည်
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -96,8 +96,9 @@ fun FoodDetailScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // ဤနေရာတွင် Locale.US စနစ်တကျ ပြောင်းလဲပြင်ဆင်ထားပါသည်
                         Text(
-                            text = "Ks ${String.format("%,.0f", price)}",
+                            text = "Ks ${String.format(java.util.Locale.US, "%,.0f", price)}",
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold
@@ -160,7 +161,6 @@ fun FoodDetailScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
                     color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                    // အမှားပြင်ဆင်ထားသောနေရာ (BoxStroke အစား BorderStroke ဟု ပြောင်းလဲလိုက်ပါသည်)
                     border = if (isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.primary) else null
                 ) {
                     Row(
@@ -174,8 +174,9 @@ fun FoodDetailScreen(
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                             color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
                         )
+                        // ဤနေရာတွင်လည်း Locale.US သို့ ပြောင်းလဲထားပါသည်
                         Text(
-                            text = "+Ks ${String.format("%,.0f", toppingPrice)}", 
+                            text = "+Ks ${String.format(java.util.Locale.US, "%,.0f", toppingPrice)}", 
                             style = MaterialTheme.typography.labelLarge,
                             color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                             fontWeight = FontWeight.Bold
