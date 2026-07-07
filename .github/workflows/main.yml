@@ -12,16 +12,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    # အလုပ်အားလုံးကို food folder ထဲမှာပဲ တိုက်ရိုက်လုပ်ဖို့ သတ်မှတ်ပေးလိုက်တာပါ
-    defaults:
-      run:
-        working-directory: food
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          sparse-checkout: .
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -44,4 +37,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: food/build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
