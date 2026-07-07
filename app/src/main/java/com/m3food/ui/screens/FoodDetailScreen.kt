@@ -1,9 +1,9 @@
 package com.m3food.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -12,9 +12,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,7 +22,6 @@ fun FoodDetailScreen(
     description: String,
     ingredients: List<String>,
     onBackClick: () -> Unit,
-    // (quantity: Int, selectedToppings: List<String>) => Unit ဖြစ်နေတာကို -> Unit ဖြစ်အောင် ပြင်လိုက်ပါတယ်
     onAddToCartClick: (quantity: Int, selectedToppings: List<String>) -> Unit
 ) {
     var quantity by remember { mutableStateOf(1) }
@@ -83,8 +79,9 @@ fun FoodDetailScreen(
                         color = MaterialTheme.colorScheme.primary
                     )
 
+                    // Error တက်နေသည့် MaterialTheme.shapes.full အစား CircleShape သို့ တိုက်ရိုက်ပြောင်းလဲထားပါသည်
                     OutlinedCard(
-                        shape = MaterialTheme.shapes.full
+                        shape = CircleShape
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             IconButton(onClick = { if (quantity > 1) quantity-- }) {
