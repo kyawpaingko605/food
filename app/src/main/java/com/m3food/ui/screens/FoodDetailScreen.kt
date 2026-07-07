@@ -79,11 +79,13 @@ fun FoodDetailScreen(
                         color = MaterialTheme.colorScheme.primary
                     )
 
-                    // Error တက်နေသည့် MaterialTheme.shapes.full အစား CircleShape သို့ တိုက်ရိုက်ပြောင်းလဲထားပါသည်
                     OutlinedCard(
                         shape = CircleShape
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        ) {
                             IconButton(onClick = { if (quantity > 1) quantity-- }) {
                                 Text("-", style = MaterialTheme.typography.titleMedium)
                             }
@@ -113,6 +115,21 @@ fun FoodDetailScreen(
                 )
             }
 
+            if (ingredients.isNotEmpty()) {
+                item {
+                    Text(
+                        text = "ပါဝင်ပစ္စည်းများ",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = ingredients.joinToString(", "),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
             item {
                 Text(
                     text = "အပိုထည့်သွင်းရန် (Toppings)",
@@ -137,7 +154,7 @@ fun FoodDetailScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(toppingName, style = MaterialTheme.typography.bodyLarge)
-                        Text("+Ks ${toppingPrice.toInt()}", style = MaterialTheme.typography.labelMedium)
+                        Text("+Ks ${String.format("%,.0f", toppingPrice)}", style = MaterialTheme.typography.labelMedium)
                     }
                 }
             }
