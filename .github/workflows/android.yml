@@ -21,20 +21,15 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      # gradlew ဖိုင် မရှိရင် ကိုယ်တိုင် အလိုအလျောက် တည်ဆောက်ခိုင်းတဲ့အဆင့်
-      - name: Generate Gradle Wrapper (gradlew)
-        run: |
-          gradle wrapper --gradle-version 8.2
-
-      # အသစ်ထွက်လာတဲ့ gradlew ကို Permission ပေးတာပါ
+      # gradlew ကို Permission ပေးတာပါ
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # APK Build ဆောက်တာပါ
+      # settings.gradle နဲ့ build.gradle မငြိအောင် အတင်းအကျပ် Build လုပ်ခိုင်းတဲ့အဆင့်
       - name: Build with Gradle
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease --no-daemon
 
-      # ထွက်လာမယ့် APK ဖိုင်ကို ရှာပြီး Upload တင်ပေးမယ့်အဆင့်
+      # ထွက်လာမယ့် APK ဖိုင်ကို Upload တင်ပေးမယ့်အဆင့်
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
