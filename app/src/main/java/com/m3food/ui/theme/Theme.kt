@@ -3,6 +3,8 @@ package com.m3food.ui.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -56,7 +58,7 @@ fun M3FoodTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES_S -> {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
@@ -66,8 +68,8 @@ fun M3FoodTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography, // Custom typography using custom fonts
-        shapes = Shapes,         // M3 Rounding (rounded-3xl, rounded-full)
+        typography = Typography(), // Default Typography အဖြစ် ပြင်ဆင်ထားပါသည်
+        shapes = Shapes(),         // Default Shapes အဖြစ် ပြင်ဆင်ထားပါသည်
         content = content
     )
 }
