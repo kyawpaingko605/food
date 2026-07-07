@@ -40,20 +40,20 @@ jobs:
         run: |
           sed -i 's/RepositoriesMode.FAIL_ON_PROJECT_REPOS/RepositoriesMode.PREFER_SETTINGS/g' settings.gradle
 
-      # AAPT compile ဖြစ်အောင် XML Launcher Icon စစ်စစ်များကို ဖန်တီးပေးမည့်အဆင့်
+      # Jetpack Compose အတွက် လိုအပ်သော အခြေခံ Theme နှင့် Icon များ ဖန်တီးပေးခြင်း
       - name: Auto Create Missing Resources & Theme
         run: |
           mkdir -p app/src/main/res/mipmap-anydpi-v26
           mkdir -p app/src/main/res/values
           
-          # အခြေခံ Theme ကို ရေးသားပေးခြင်း
+          # Jetpack Compose နှင့် အဆင်ပြေမည့် အခြေခံ ပေါ့ပါးသော Theme ဆောက်ပေးခြင်း
           cat <<EOF > app/src/main/res/values/themes.xml
           <resources>
-              <style name="Theme.Material3.DayNight.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar"/>
+              <style name="Theme.Material3.DayNight.NoActionBar" parent="android:Theme.Material.NoActionBar"/>
           </resources>
           EOF
           
-          # AAPT က လက်ခံမည့် ကောင်းမွန်သော XML Icon များ ဖန်တီးပေးခြင်း
+          # XML Adaptive Icon များ ဖန်တီးပေးခြင်း
           cat <<EOF > app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
           <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
               <background android:drawable="@android:color/white"/>
