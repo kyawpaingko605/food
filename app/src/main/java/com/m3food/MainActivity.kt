@@ -27,6 +27,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.m3food.ui.screens.FoodDetailScreen
+import com.m3food.ui.screens.FoodItem
+import com.m3food.ui.screens.HomeScreen
 import com.m3food.ui.theme.M3FoodTheme
 
 class MainActivity : ComponentActivity() {
@@ -34,17 +36,24 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            M3FoodTheme {
+            // dynamicColor အဖြူရောင်ထပ်ပြီး စာသားမမြင်ရသည့်ပြဿနာအတွက် false ဟု ပိတ်ထားပါသည်
+            M3FoodTheme(dynamicColor = false) {
                 var currentScreen by remember { mutableStateOf("home") }
                 var cartItemsCount by remember { mutableStateOf(3) }
+                
+                // ရွေးချယ်လိုက်သော အစားအသောက် Data ကို မှတ်ထားရန် State
+                var selectedFoodItem by remember { mutableStateOf<FoodItem?>(null) }
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
                         NavigationBar {
                             NavigationBarItem(
-                                selected = currentScreen == "home",
-                                onClick = { currentScreen = "home" },
+                                selected = currentScreen == "home" || currentScreen == "detail",
+                                onClick = { 
+                                    selectedFoodItem = null
+                                    currentScreen = "home" 
+                                },
                                 icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
                                 label = { Text("ပင်မစာမျက်နှာ") }
                             )
@@ -76,7 +85,12 @@ class MainActivity : ComponentActivity() {
                     AppNavigationHost(
                         modifier = Modifier.padding(innerPadding),
                         currentScreen = currentScreen,
-                        onNavigate = { screen -> currentScreen = screen }
+                        selectedFoodItem = selectedFoodItem,
+                        onNavigate = { screen -> currentScreen = screen },
+                        onFoodSelect = { food ->
+                            selectedFoodItem = food
+                            currentScreen = "detail" // အသေးစိတ်စာမျက်နှာသို့ သွားမည်
+                        }
                     )
                 }
             }
@@ -88,24 +102,34 @@ class MainActivity : ComponentActivity() {
 fun AppNavigationHost(
     modifier: Modifier = Modifier,
     currentScreen: String,
-    onNavigate: (String) -> Unit
+    selectedFoodItem: FoodItem?,
+    onNavigate: (String) -> Unit,
+    onFoodSelect: (FoodItem) -> Unit
 ) {
     Box(
         modifier = modifier.fillMaxSize()
     ) {
         when (currentScreen) {
             "home" -> {
-                // အသစ်ပြင်ဆင်ထားသော မြန်မာအစားအသောက် Detail Screen ကို ချိတ်ဆက်ထားပါသည်
-                FoodDetailScreen(
-                    foodName = "မုန့်ဟင်းခါး",
-                    price = 2500.0,
-                    description = "ရွှေဘိုဆန်အစစ်ဖြင့် ပြုလုပ်ထားသော နန်းပြား မုန့်ဟင်းခါး အုန်းနို့ဆမ်း ပူပူနွေးနွေးလေး ဖြစ်ပါသည်။",
-                    ingredients = listOf("မုန့်ဟင်းခါးဖတ်", "ငါးခူ", "ဘဲဥ"),
-                    onBackClick = { onNavigate("menu") },
-                    onAddToCartClick = { quantity, toppings -> 
-                        // ခြင်းတောင်းထဲသို့ ထည့်သွင်းသည့် လုပ်ဆောင်ချက် ထည့်ရန်
-                    }
+                // အစားအသောက် Grid ပုံစံ ပေါ်လာစေရန် HomeScreen ကို ဤနေရာတွင် ချိတ်ဆက်ရပါမည်
+                HomeScreen(
+                    onFoodClick = { food -> onFoodSelect(food) }
                 )
+            }
+            "detail" -> {
+                // ကလစ်နှိပ်လိုက်သည့် ဟင်းအလိုက် Data ကို လှမ်းပြောင်းပေးခြင်း
+                selectedFoodItem?.let { food ->
+                    FoodDetailScreen(
+                        foodName = food.name,
+                        price = food.price,
+                        description = food.description,
+                        ingredients = listOf(),
+                        onBackClick = { onNavigate("home") },
+                        onAddToCartClick = { quantity, toppings -> 
+                            // ခြင်းတောင်းထဲထည့်ရန်
+                        }
+                    )
+                }
             }
             "menu" -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
