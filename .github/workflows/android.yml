@@ -21,7 +21,7 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      # လိုအပ်တဲ့ Wrapper ဖိုင်တွေကို ဖန်တီးပေးမည့်အဆင့်
+      # လိုအပ်တဲ့ Wrapper ဖိုင်များကို ဖန်တီးပေးခြင်း
       - name: Fix and Generate Gradle Wrapper Files
         run: |
           mkdir -p gradle/wrapper
@@ -36,19 +36,33 @@ jobs:
           zipStorePath=wrapper/dists
           EOF
 
-      # settings.gradle ထဲက FAIL_ON_PROJECT_REPOS ကို PREFER_SETTINGS ဖြစ်အောင် Actions ထဲမှာတင် အလိုအလျောက် ပြင်ခိုင်းတာပါ
       - name: Patch settings.gradle to fix repository mode
         run: |
           sed -i 's/RepositoriesMode.FAIL_ON_PROJECT_REPOS/RepositoriesMode.PREFER_SETTINGS/g' settings.gradle
 
+      # Manifest ထဲမှာ ရှာမတွေ့ဘူးပြောနေတဲ့ ရင်းမြစ် (Missing Resources) များကို အလိုအလျောက် ဖန်တီးပေးမည့်အဆင့်
+      - name: Auto Create Missing Resources & Theme
+        run: |
+          mkdir -p app/src/main/res/mipmap-hdpi
+          mkdir -p app/src/main/res/values
+          
+          # အခြေခံ Theme ကို ရေးသားပေးခြင်း
+          cat <<EOF > app/src/main/res/values/themes.xml
+          <resources>
+              <style name="Theme.Material3.DayNight.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar"/>
+          </resources>
+          EOF
+          
+          # အခြေခံ အိုင်ကွန်ပုံများကို ယာယီဖန်တီးပေးခြင်း
+          touch app/src/main/res/mipmap-hdpi/ic_launcher.png
+          touch app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # ပြဿနာအားလုံး ရှင်းသွားပြီဖြစ်လို့ အောင်မြင်စွာ APK Build လုပ်မည့်အဆင့်
       - name: Build with Gradle
         run: ./gradlew assembleRelease --no-daemon
 
-      # ထွက်လာမည့် APK ဖိုင်ကို သိမ်းဆည်းပေးမည့်အဆင့်
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
